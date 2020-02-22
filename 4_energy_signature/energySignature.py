@@ -55,67 +55,124 @@ for i in range(len(data.index)):
         timestamp = datetime.strptime(tt, "%m/%d/%Y%H:%M:%S")
     tmstmp.append(timestamp)
 data.index = pd.to_datetime(tmstmp)
-data['Temp_in'] = data[['Temp_in1', 'Temp_in2', 'Temp_in2']].astype(float).mean(1)
+# Determine the internal temperature
+data['Temp_in'] = data[['Temp_in1', 'Temp_in2', 'Temp_in3']].astype(float).mean(1)
+# Determine the internal/external temperature difference
 data['deltaT'] = data.Temp_in - data.Temp_out
 data['Power'] = (data.Heat + data.Cool)/3.6e6
-data
+o_data = data
 
-model = sm.OLS(data.Power,sm.add_constant(data.deltaT))
-results=model.fit()
-
-fig = plt.figure
-plt.plot(data.deltaT,results.predict(),'r', linewidth=1, label='Regression Line')
-plt.scatter(data.deltaT,data.Power, s=1, label='Observations')
+#==========================================
+# Original Observation
+#==========================================
+# Extract the cooling and heating dataframes
+cool_d = data.where(data['Cool']!=0.0).dropna()
+heat_d = data.where(data['Heat']!=0.0).dropna()
+# Fit the regression models
+model_h = sm.OLS(heat_d.Heat/3.6e6,sm.add_constant(heat_d.deltaT))
+model_c = sm.OLS(cool_d.Cool/3.6e6,sm.add_constant(cool_d.deltaT))
+results_h = model_h.fit()
+results_c = model_c.fit()
+# Plot the results
+fig = plt.figure()
+plt.plot(heat_d.deltaT,results_h.predict(),'r', linewidth=1, label='Heating Regression Line')
+plt.plot(cool_d.deltaT,results_c.predict(),'k', linewidth=1, label='Cooling Regression Line')
+plt.scatter(heat_d.deltaT,heat_d.Heat/3.6e6, s=2, label='Observations')
+plt.scatter(cool_d.deltaT,cool_d.Cool/3.6e6, s=2, color='C0')
 plt.xlabel('\u0394T [\u00B0C]')
 plt.ylabel('Energy Consumption [kWh]')
-plt.ylim(-0.1)
+plt.ylim(-0.01,1.27)
 plt.legend()
-plt.savefig('../fig/esobs')
-plt.close()
+#plt.savefig('../fig/esobs.png', transparent=True)
+#plt.close()
 
+results_h.params
+
+#==========================================
+# Hourly Resempled Data
+#==========================================
+# Extract the resampled cooling and heating dataframes
+data = o_data
 data=data.resample('H').mean()
 data=data.dropna()
-model = sm.OLS(data.Power,sm.add_constant(data.deltaT))
-results=model.fit()
-
-fig = plt.figure
-plt.plot(data.deltaT,results.predict(),'r', linewidth=1, label='Regression Line')
-plt.scatter(data.deltaT,data.Power, s=5, label='Observations')
+cool_d = data.where(data['Cool']!=0.0).dropna()
+heat_d = data.where(data['Heat']!=0.0).dropna()
+# Fit the regression models
+model_h = sm.OLS(heat_d.Heat/3.6e6,sm.add_constant(heat_d.deltaT))
+model_c = sm.OLS(cool_d.Cool/3.6e6,sm.add_constant(cool_d.deltaT))
+results_h = model_h.fit()
+results_c = model_c.fit()
+# Plot the results
+fig = plt.figure()
+plt.plot(heat_d.deltaT,results_h.predict(),'r', linewidth=1, label='Heating Regression Line')
+plt.plot(cool_d.deltaT,results_c.predict(),'k', linewidth=1, label='Cooling Regression Line')
+plt.scatter(heat_d.deltaT,heat_d.Heat/3.6e6, s=3, label='Observations')
+plt.scatter(cool_d.deltaT,cool_d.Cool/3.6e6, s=3, color='C0')
 plt.xlabel('\u0394T [\u00B0C]')
 plt.ylabel('Energy Consumption [kWh]')
-plt.ylim(-0.1)
+plt.ylim(-0.01,1.27)
 plt.legend()
-plt.savefig('../fig/eshourly')
-plt.close()
+#plt.savefig('../fig/eshourly', transparent=True)
+#plt.close()
 
+results_h.params
+
+#==========================================
+# Daily Resempled Data
+#==========================================
+# Extract the resampled cooling and heating dataframes
+data = o_data
 data=data.resample('D').mean()
 data=data.dropna()
-model = sm.OLS(data.Power,sm.add_constant(data.deltaT))
-results=model.fit()
-
-fig = plt.figure
-plt.plot(data.deltaT,results.predict(),'r', linewidth=1, label='Regression Line')
-plt.scatter(data.deltaT,data.Power, s=5, label='Observations')
+cool_d = data.where(data['Cool']!=0.0).dropna()
+heat_d = data.where(data['Heat']!=0.0).dropna()
+# Fit the regression models
+model_h = sm.OLS(heat_d.Heat/3.6e6,sm.add_constant(heat_d.deltaT))
+model_c = sm.OLS(cool_d.Cool/3.6e6,sm.add_constant(cool_d.deltaT))
+results_h = model_h.fit()
+results_c = model_c.fit()
+# Plot the results
+fig = plt.figure()
+plt.plot(heat_d.deltaT,results_h.predict(),'r', linewidth=1, label='Heating Regression Line')
+plt.plot(cool_d.deltaT,results_c.predict(),'k', linewidth=1, label='Cooling Regression Line')
+plt.scatter(heat_d.deltaT,heat_d.Heat/3.6e6, s=3, label='Observations')
+plt.scatter(cool_d.deltaT,cool_d.Cool/3.6e6, s=3, color='C0')
 plt.xlabel('\u0394T [\u00B0C]')
 plt.ylabel('Energy Consumption [kWh]')
-plt.ylim(-0.1)
+plt.ylim(-0.01,.53)
 plt.legend()
-plt.savefig('../fig/esdaily')
-plt.close()
+#plt.savefig('../fig/esdaily', transparent=True)
+#plt.close()
 
+results_h.params
+
+#==========================================
+# Weekly Resempled Data
+#==========================================
+# Extract the resampled cooling and heating dataframes
+data = o_data
 data=data.resample('W').mean()
 data=data.dropna()
-model = sm.OLS(data.Power,sm.add_constant(data.deltaT))
-results=model.fit()
-
-fig = plt.figure
-plt.plot(data.deltaT,results.predict(),'r', linewidth=1, label='Regression Line')
-plt.scatter(data.deltaT,data.Power, s=10, label='Observations')
+cool_d = data.where(data['Cool']!=0.0).dropna()
+heat_d = data.where(data['Heat']!=0.0).dropna()
+# Fit the regression models
+model_h = sm.OLS(heat_d.Heat/3.6e6,sm.add_constant(heat_d.deltaT))
+model_c = sm.OLS(cool_d.Cool/3.6e6,sm.add_constant(cool_d.deltaT))
+results_h = model_h.fit()
+results_c = model_c.fit()
+# Plot the results
+fig = plt.figure()
+plt.plot(heat_d.deltaT,results_h.predict(),'r', linewidth=1, label='Heating Regression Line')
+plt.plot(cool_d.deltaT,results_c.predict(),'k', linewidth=1, label='Cooling Regression Line')
+plt.scatter(heat_d.deltaT,heat_d.Heat/3.6e6, s=3, label='Observations')
+plt.scatter(cool_d.deltaT,cool_d.Cool/3.6e6, s=3, color='C0')
 plt.xlabel('\u0394T [\u00B0C]')
 plt.ylabel('Energy Consumption [kWh]')
-plt.ylim(-0.1)
+plt.ylim(-0.01,.5)
 plt.legend()
-plt.savefig('../fig/esweekly')
-plt.close()
+#plt.savefig('../fig/esweekly', transparent=True)
+#plt.close()
+
+results_h.params
 
 
