@@ -4,7 +4,7 @@
 
 # ICT in Building Design
 This work is part of the project for the ICT in Building Design course at Politecnico di Torino.  
-The main purpose of the work is to develop a simple office building in Moscow (RUS) in order to evaluate its energy efficiency. Furthermore the building energy classification is performed through the Energy Signature technique and finally a machine-learning based predictive control system for the internal temperature is attempted.
+The main purpose of the work is to develop a simple office building in Moscow (RUS) in order to evaluate its energy efficiency. Furthermore the building energy classification is performed through the Energy Signature technique and finally a machine-learning based predictive control system for the internal temperature is attempted.<img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">
 
 
 <!-- ABSTRACT -->
