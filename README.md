@@ -17,3 +17,7 @@ This paper therefore first deals with the optimization of the U-value, the Windo
 * [DesignBuilder](http://designbuilderitalia.it/)
 * [Energy+](https://energyplus.net/)
 * [Python3](https://www.python.org/download/releases/3.0/)
+
+
+## 
+(c) 2020, Luca Gioacchini, Francesco Barlocco, Alan Cedric Grimm, Bruno Valente, Stefano Picerno
